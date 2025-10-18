@@ -26,9 +26,9 @@ def create_app() -> FastAPI:
         yield
         await pool.disconnect()
 
-    if _Env.PROD.name == settings.ENV:
+    if settings.SENTRY_ENABLED:
         sentry_sdk.init(
-            dsn=settings.WEB_SENTRY_DSN,
+            dsn=settings.SENTRY_DSN,
             sample_rate=settings.SENTRY_SAMPLE_RATE,
             traces_sample_rate=settings.SENTRY_TRACES_SAMPLE_RATE,
             release=settings.VERSION,

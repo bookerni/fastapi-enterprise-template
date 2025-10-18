@@ -32,9 +32,10 @@ class Settings(BaseSettings):
     ENABLE_LIMIT: bool = Field(default=False)
     LIMITED_RATE: tuple[int, int] = Field(default=(20, 10))
 
-    WEB_SENTRY_DSN: str | None = Field(default=None)
+    SENTRY_DSN: str | None = Field(default=None)
     SENTRY_SAMPLE_RATE: float = Field(default=1.0, gt=0.0, le=1.0)
     SENTRY_TRACES_SAMPLE_RATE: float | None = Field(default=None, gt=0.0, le=1.0)
+    SENTRY_ENABLED: bool = Field(default=False)
 
     SQLALCHEMY_DATABASE_URI: str = Field(
         default="postgresql+asyncpg://demo:91fb8e9e009f5b9ce1854d947e6fe4a3@localhost:5432/demo"
