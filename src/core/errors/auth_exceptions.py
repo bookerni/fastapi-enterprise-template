@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 def error_message_value_handler(value: Any) -> Any:
     if isinstance(value, dict) and "en_US" in value:
-        return value[locale_ctx.get()]
+        return value["en_US"]  # Always use English
     if isinstance(value, IPv4Address | IPv6Address | IPv4Network | IPv6Network | IPv4Interface | IPv6Interface | UUID):
         return str(value)
     if isinstance(value, list):

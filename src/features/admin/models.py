@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import ClassVar
 from uuid import UUID
 
-from sqlalchemy import JSON, DateTime, ForeignKey, Integer, and_, func, select
+from sqlalchemy import JSON, DateTime, ForeignKey, Integer, and_, func, select, UniqueConstraint
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.orm import Mapped, backref, column_property, mapped_column, relationship
 from sqlalchemy.orm.collections import attribute_mapped_collection
@@ -36,11 +36,15 @@ class RoleMenu(Base):
 
 class Role(Base, AuditTimeMixin):
     __tablename__ = "role"
+    __table_args__ = (
+        UniqueConstraint('name', name='uq_role_name'),
+        UniqueConstraint('slug', name='uq_role_slug'),
+    )
     __search_fields__: ClassVar = {"name"}
     __visible_name__ = {"en_US": "Role", "zh_CN": "用户角色"}
     id: Mapped[types.int_pk]
-    name: Mapped[str]
-    slug: Mapped[str]
+    name: Mapped[str] = mapped_column(unique=True)
+    slug: Mapped[str] = mapped_column(unique=True)
     description: Mapped[str | None]
     permission: Mapped[list["Permission"]] = relationship(
         secondary="role_permission", back_populates="role", lazy="joined"

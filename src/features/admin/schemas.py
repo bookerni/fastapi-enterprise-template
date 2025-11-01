@@ -119,12 +119,12 @@ class MenuQuery(QueryParams): ...
 
 
 class UserCreate(UserBase):
+    password: str
     group_id: int
     role_id: int | None = None
 
 
 class GroupCreate(GroupBase):
-    password: str
     role_id: int
     user: list[IdCreate]
 

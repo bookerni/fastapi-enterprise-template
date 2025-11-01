@@ -560,7 +560,7 @@ class BaseRepository(Generic[ModelT, CreateSchemaType, UpdateSchemaType, QuerySc
         for fk_name, relation in fk_args.items():
             if value := record_dict.get(fk_name):
                 table_name, column = relation
-                stmt_text = f"SELECT 1 FROM {table_name} WHERE {column}='{value}'"  # noqa: S608
+                stmt_text = f'SELECT 1 FROM "{table_name}" WHERE "{column}"=\'{value}\''  # noqa: S608
                 fk_result = (await session.execute(text(stmt_text))).one_or_none()
                 self._check_not_found(fk_result, column, value)
 
@@ -723,11 +723,12 @@ class BaseRepository(Generic[ModelT, CreateSchemaType, UpdateSchemaType, QuerySc
             stmt = self._apply_order_by(stmt, query.order_by, query.order)
         stmt = self._apply_selectinload(stmt, *options, undefer_load=undefer_load)
         _count = await session.scalar(c_stmt)
-        results = (await session.scalars(stmt)).all()
+        # Use unique() to handle joined eager loads against collections
+        results = (await session.scalars(stmt)).unique().all()
         return _count if _count is not None else 0, results
 
     async def get_all(self, session: AsyncSession) -> Sequence[ModelT]:
-        return (await session.scalars(self._get_base_stmt())).all()
+        return (await session.scalars(self._get_base_stmt())).unique().all()
 
     async def get_one_by_id(
         self, session: AsyncSession, pk_id: PkIdT, *options: ExecutableOption, undefer_load: bool = False
@@ -835,7 +836,7 @@ class BaseRepository(Generic[ModelT, CreateSchemaType, UpdateSchemaType, QuerySc
         stmt = self._get_base_stmt()
         stmt = self._apply_filter(stmt=stmt, filters=filters)
         stmt = self._apply_selectinload(stmt, *options, undefer_load=undefer_load)
-        return (await session.scalars(stmt)).all()
+        return (await session.scalars(stmt)).unique().all()
 
     async def get_multi_by_ids(
         self, session: AsyncSession, pk_ids: list[PkIdT], *options: ExecutableOption, undefer_load: bool = False
@@ -845,7 +846,7 @@ class BaseRepository(Generic[ModelT, CreateSchemaType, UpdateSchemaType, QuerySc
         stmt = stmt.where(id_str.in_(pk_ids))
         if options:
             stmt = self._apply_selectinload(stmt, *options, undefer_load=undefer_load)
-        return (await session.scalars(stmt)).all()
+        return (await session.scalars(stmt)).unique().all()
 
     async def get_multi_by_pks_or_404(
         self, session: AsyncSession, pk_ids: list[PkIdT], *options: ExecutableOption, undefer_load: bool = False

@@ -45,7 +45,7 @@ async def auth(
         raise auth_exceptions.TokenExpireError
     user = await session.get(User, token_data.sub, options=[selectinload(User.role)])
     if not user:
-        raise auth_exceptions.NotFoundError(User.__visible_name__[locale_ctx.get()], "id", id)
+        raise auth_exceptions.NotFoundError(User.__visible_name__["en_US"], "id", id)
     check_user_active(user.is_active)
     operation_id = request.scope["route"].operation_id
     if not operation_id:

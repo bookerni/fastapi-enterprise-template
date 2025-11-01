@@ -1,10 +1,13 @@
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 import redis.asyncio as aioreids
 import sentry_sdk
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.errors import ServerErrorMiddleware
 
@@ -64,6 +67,15 @@ def create_app() -> FastAPI:
     def get_stoplight_elements() -> HTMLResponse:
         return get_stoplight_elements_html(openapi_url="/api/openapi.json", title=settings.PROJECT_NAME)
 
+    # Mount static files and templates
+    static_dir = Path(__file__).parent / "static"
+    templates_dir = Path(__file__).parent / "templates"
+    app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
+    
+    # Register frontend routes
+    from src.features.frontend.routes import router as frontend_router
+    app.include_router(frontend_router)
+    
     app.include_router(router, prefix="/api")
     for handler in exception_handlers:
         app.add_exception_handler(exc_class_or_status_code=handler["exception"], handler=handler["handler"])

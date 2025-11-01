@@ -18,7 +18,7 @@ class UserRepo(BaseRepository[User, schemas.UserCreate, schemas.UserUpdate, sche
         stmt = self._get_base_stmt().where(or_(self.model.email == user.username, self.model.phone == user.username))
         db_user = await session.scalar(stmt)
         if not db_user:
-            raise NotFoundError(self.model.__visible_name__[locale_ctx.get()], "username", user.username)
+            raise NotFoundError(self.model.__visible_name__["en_US"], "username", user.username)
         if not verify_password(user.password, db_user.password):
             raise PermissionDenyError
         return db_user

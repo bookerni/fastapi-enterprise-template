@@ -17,9 +17,8 @@ class I18n:
         self.translations = translations
 
     def gettext(self, path: str, **kwargs: Any) -> dict | str:
-        locale = locale_ctx.get()
-        if not locale or locale not in self.accepted_languages:
-            locale = "en_US"
+        # Always use English
+        locale = "en_US"
         founded: dict | str = self._find(locale, path)
 
         if len(kwargs) > 0 and isinstance(founded, str):
