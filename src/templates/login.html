@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Admin Panel{% endblock %}
+
+{% block body %}
+<div class="page page-center login-page">
+    <div class="container container-tight py-4">
+        <div class="text-center mb-4">
+            <h1 class="text-white">Admin Panel</h1>
+        </div>
+        
+        <div class="card card-md card-login">
+            <div class="card-body">
+                <h2 class="h2 text-center mb-4">Login to your account</h2>
+                
+                <form id="login-form" onsubmit="handleLogin(event)">
+                    <div class="mb-3">
+                        <label class="form-label required">Username</label>
+                        <input type="text" class="form-control" id="username" name="username" placeholder="Enter username" required autofocus>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label required">
+                            Password
+                        </label>
+                        <div class="input-group input-group-flat">
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" required>
+                            <span class="input-group-text">
+                                <a href="#" class="link-secondary" title="Show password" data-bs-toggle="tooltip" onclick="togglePassword(); return false;">
+                                    <i class="ti ti-eye" id="password-icon"></i>
+                                </a>
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-check">
+                            <input type="checkbox" class="form-check-input" id="remember-me">
+                            <span class="form-check-label">Remember me on this device</span>
+                        </label>
+                    </div>
+                    
+                    <div class="form-footer">
+                        <button type="submit" class="btn btn-primary w-100" id="login-btn">
+                            Sign in
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="text-center text-white mt-3">
+            <small>&copy; 2025 Admin Panel. All rights reserved.</small>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Redirect to dashboard if already logged in
+    if (window.authService.isAuthenticated()) {
+        window.location.href = '/dashboard';
+    }
+
+    // Toggle password visibility
+    function togglePassword() {
+        const passwordInput = document.getElementById('password');
+        const passwordIcon = document.getElementById('password-icon');
+        
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            passwordIcon.classList.remove('ti-eye');
+            passwordIcon.classList.add('ti-eye-off');
+        } else {
+            passwordInput.type = 'password';
+            passwordIcon.classList.remove('ti-eye-off');
+            passwordIcon.classList.add('ti-eye');
+        }
+    }
+
+    // Handle login form submission
+    async function handleLogin(event) {
+        event.preventDefault();
+        
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const loginBtn = document.getElementById('login-btn');
+        
+        try {
+            setButtonLoading(loginBtn, true);
+            
+            await window.authService.login(username, password);
+            
+            showToast('Login successful! Redirecting...', 'success');
+            
+            // Redirect to dashboard
+            setTimeout(() => {
+                window.location.href = '/dashboard';
+            }, 500);
+            
+        } catch (error) {
+            console.error('Login failed:', error);
+            showToast(error.message || 'Login failed. Please check your credentials.', 'danger');
+            setButtonLoading(loginBtn, false);
+        }
+    }
+
+    // Handle Enter key in form
+    document.getElementById('login-form').addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            document.getElementById('login-btn').click();
+        }
+    });
+</script>
+{% endblock %}

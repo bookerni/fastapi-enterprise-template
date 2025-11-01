@@ -1,0 +1,165 @@
+{% extends "layout.html" %}
+
+{% block title %}Dashboard - Admin Panel{% endblock %}
+
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="row row-deck row-cards">
+    <!-- Statistics Cards -->
+    <div class="col-sm-6 col-lg-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="subheader">Total Users</div>
+                </div>
+                <div class="h1 mb-3" id="total-users">0</div>
+                <div class="d-flex mb-2">
+                    <div>Active users in the system</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-sm-6 col-lg-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="subheader">Total Groups</div>
+                </div>
+                <div class="h1 mb-3" id="total-groups">0</div>
+                <div class="d-flex mb-2">
+                    <div>User groups configured</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-sm-6 col-lg-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="subheader">Total Roles</div>
+                </div>
+                <div class="h1 mb-3" id="total-roles">0</div>
+                <div class="d-flex mb-2">
+                    <div>Roles in the system</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-sm-6 col-lg-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="subheader">System Status</div>
+                </div>
+                <div class="h1 mb-3 text-success">
+                    <i class="ti ti-circle-check"></i>
+                </div>
+                <div class="d-flex mb-2">
+                    <div>All systems operational</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row row-deck row-cards mt-3">
+    <!-- Quick Actions -->
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Quick Actions</h3>
+            </div>
+            <div class="card-body">
+                <div class="row g-2">
+                    <div class="col-md-3">
+                        <a href="/users" class="btn btn-primary w-100">
+                            <i class="ti ti-users me-2"></i>
+                            Manage Users
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="/groups" class="btn btn-outline-primary w-100">
+                            <i class="ti ti-users-group me-2"></i>
+                            Manage Groups
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="/roles" class="btn btn-outline-primary w-100">
+                            <i class="ti ti-shield me-2"></i>
+                            Manage Roles
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="/users" class="btn btn-outline-success w-100">
+                            <i class="ti ti-user-plus me-2"></i>
+                            Add New User
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Activity -->
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Welcome to Admin Panel</h3>
+            </div>
+            <div class="card-body">
+                <p>This is your dashboard. You can manage users, roles, groups and permissions from here.</p>
+                <ul>
+                    <li><strong>User Management:</strong> Create, edit, and delete users</li>
+                    <li><strong>Role Management:</strong> Configure roles and permissions</li>
+                    <li><strong>Group Management:</strong> Organize users into groups</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Load dashboard statistics
+    async function loadDashboardStats() {
+        try {
+            // Load users count
+            const usersResponse = await window.apiClient.users.list({ page: 1, page_size: 1 });
+            const usersTotal = usersResponse.count || usersResponse.total || 0;
+            document.getElementById('total-users').textContent = usersTotal;
+            
+            // Load groups count
+            try {
+                const groupsResponse = await window.apiClient.groups.list({ page: 1, page_size: 1 });
+                const groupsTotal = groupsResponse.count || groupsResponse.total || 0;
+                document.getElementById('total-groups').textContent = groupsTotal;
+            } catch (error) {
+                console.log('Groups data not available');
+            }
+            
+            // Load roles count
+            try {
+                const rolesResponse = await window.apiClient.roles.list({ page: 1, page_size: 1 });
+                const rolesTotal = rolesResponse.count || rolesResponse.total || 0;
+                document.getElementById('total-roles').textContent = rolesTotal;
+            } catch (error) {
+                console.log('Roles data not available:', error.message);
+                document.getElementById('total-roles').textContent = '-';
+            }
+            
+        } catch (error) {
+            console.error('Error loading dashboard stats:', error);
+        }
+    }
+
+    // Load stats on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        loadDashboardStats();
+    });
+</script>
+{% endblock %}

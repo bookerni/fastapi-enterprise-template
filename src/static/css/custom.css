@@ -1,0 +1,60 @@
+/* Custom styles for the application */
+:root {
+    --primary-color: #206bc4;
+}
+
+.login-page {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+}
+
+.card-login {
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+}
+
+.loading-spinner {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: spinner-border 0.75s linear infinite;
+}
+
+@keyframes spinner-border {
+    to { transform: rotate(360deg); }
+}
+
+.toast-container {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 9999;
+}
+
+.required::after {
+    content: " *";
+    color: #d63939;
+}
+
+.table-actions {
+    white-space: nowrap;
+}
+
+.user-avatar {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.sidebar-brand {
+    font-size: 1.25rem;
+    font-weight: 600;
+    padding: 1rem;
+}
+
+.page-wrapper {
+    min-height: 100vh;
+}

@@ -39,17 +39,19 @@ services:
       - RABBITMQ_DEFAULT_PASS=${MQ_DEFAULT_PASS}
     env_file:
       - .env
-  # app:
-  #   depends_on:
-  #     - redis
-  #     - postgres
-  #     - rabbitmq
-  #   build:
-  #     context: .
-  #     dockerfile: ./Dockerfile
-  #   container_name: "app"
-  #   restart: unless-stopped
-  #   ports:
-  #     - "${APP_PORT}:8000"
-  #   volumes:
-  #     - ./data/app:/var/lib/app
+  app:
+    depends_on:
+      - redis
+      - postgres
+      - rabbitmq
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    container_name: "app"
+    restart: unless-stopped
+    ports:
+      - 8000:8000
+    volumes:
+      - ./data/app:/var/lib/app
+    env_file:
+      - .env

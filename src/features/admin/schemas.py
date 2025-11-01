@@ -126,11 +126,11 @@ class UserCreate(UserBase):
 
 class GroupCreate(GroupBase):
     role_id: int
-    user: list[IdCreate]
+    user: list[IdCreate] = []
 
 
 class RoleCreate(RoleBase):
-    permission: list[IdCreate]
+    permission: list[IdCreate] = []
 
 
 class UserUpdate(UserCreate):

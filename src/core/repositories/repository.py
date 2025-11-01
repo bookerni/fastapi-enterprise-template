@@ -606,10 +606,13 @@ class BaseRepository(Generic[ModelT, CreateSchemaType, UpdateSchemaType, QuerySc
         if m2m:
             for key, value in m2m.items():
                 if hasattr(obj_in, key) and getattr(obj_in, key) is not None:
-                    dto_m2m = BaseRepository(value)
-                    db_m2m = await dto_m2m.get_multi_by_pks_or_404(session, [r.id for r in getattr(obj_in, key)])
-                    setattr(new_obj, key, db_m2m)
-                setattr(obj_in, key, value)
+                    relation_data = getattr(obj_in, key)
+                    if relation_data:  # Only process if the list is not empty
+                        dto_m2m = BaseRepository(value)
+                        db_m2m = await dto_m2m.get_multi_by_pks_or_404(session, [r.id for r in relation_data])
+                        setattr(new_obj, key, db_m2m)
+                    else:
+                        setattr(new_obj, key, [])
         if commit:
             return await self.commit(session, new_obj)
         return new_obj
